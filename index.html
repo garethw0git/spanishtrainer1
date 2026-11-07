@@ -213,7 +213,11 @@ function getWordWeight(word){
         return 5;
     }
 
-    return 1 + stats.wrong * 3 - stats.correct;
+    return Math.max(
+    2,
+    5 + stats.wrong * 4 - stats.correct
+);
+    
 }
 function chooseWeightedWord(dataset){
 
