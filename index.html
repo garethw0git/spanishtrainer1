@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spanish A2+ Trainer</title>
 
-let wordStats =
-JSON.parse(localStorage.getItem("wordStats")) || {};
+
     
 <style>
 body{
@@ -106,7 +105,9 @@ input{
 </div>
 
 <script>
-
+let wordStats =
+JSON.parse(localStorage.getItem("wordStats")) || {};
+    
 const vocabulary = [
 {id:1,q:"receipt",a:"recibo"},
 {id:2,q:"neighbourhood",a:"barrio"},
@@ -162,7 +163,6 @@ function nextQuestion(){
 }
 
     document.getElementById("question").textContent=currentQuestion.q;
-    document.getElementById("answer").value="";
     document.getElementById("feedback").textContent="";
     document.getElementById("answerSection").style.display = "none";
 }
