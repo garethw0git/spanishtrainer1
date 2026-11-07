@@ -77,9 +77,25 @@ input{
 
 <h2 id="question"></h2>
 
-<input id="answer" placeholder="Type answer here">
+<button class="primary" onclick="showAnswer()">Show Answer</button>
 
-<button class="primary" onclick="checkAnswer()">Check Answer</button>
+<div id="answerSection" style="display:none;margin-top:15px;">
+
+    <h3 id="revealedAnswer"></h3>
+
+    <p>Did you get it?</p>
+
+    <button class="success" onclick="markCorrect()">
+        ✅ Got It
+    </button>
+
+    <button style="background:#d13438;color:white;"
+            onclick="markWrong()">
+        ❌ Didn't Get It
+    </button>
+
+</div>
+
 <button onclick="nextQuestion()">Skip</button>
 
 <p id="feedback"></p>
@@ -138,39 +154,48 @@ function nextQuestion(){
     document.getElementById("question").textContent=currentQuestion.q;
     document.getElementById("answer").value="";
     document.getElementById("feedback").textContent="";
+    document.getElementById("answerSection").style.display = "none";
 }
 
-function checkAnswer(){
+function showAnswer(){
 
-    const userAnswer=document.getElementById("answer")
-        .value
-        .trim()
-        .toLowerCase();
+    document.getElementById("revealedAnswer").textContent =
+        currentQuestion.a;
 
-    const expected=currentQuestion.a.toLowerCase();
-
-    if(userAnswer===expected){
-
-        correct++;
-        localStorage.setItem("correct",correct);
-
-        document.getElementById("feedback").innerHTML=
-        "<span class='correct'>Correct</span>";
-
-    } else {
-
-        wrong++;
-        localStorage.setItem("wrong",wrong);
-
-        document.getElementById("feedback").innerHTML=
-        "<span class='wrong'>Wrong</span><br>Correct answer: "
-        + currentQuestion.a;
-    }
-
-    document.getElementById("correctCount").textContent=correct;
-    document.getElementById("wrongCount").textContent=wrong;
+    document.getElementById("answerSection").style.display =
+        "block";
 }
 
+function markCorrect(){
+
+    correct++;
+
+    localStorage.setItem("correct",correct);
+
+    document.getElementById("correctCount").textContent =
+        correct;
+
+    document.getElementById("feedback").innerHTML =
+        "<span class='correct'>Great!</span>";
+
+    setTimeout(nextQuestion,800);
+}
+
+function markWrong(){
+
+    wrong++;
+
+    localStorage.setItem("wrong",wrong);
+
+    document.getElementById("wrongCount").textContent =
+        wrong;
+
+    document.getElementById("feedback").innerHTML =
+        "<span class='wrong'>We'll review this again.</span>";
+
+    setTimeout(nextQuestion,800);
+}
+    
 document.getElementById("mode")
 .addEventListener("change",nextQuestion);
 
