@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spanish A2+ Trainer</title>
 
+let wordStats =
+JSON.parse(localStorage.getItem("wordStats")) || {};
+    
 <style>
 body{
     font-family: Arial, sans-serif;
@@ -105,17 +108,18 @@ input{
 <script>
 
 const vocabulary = [
-{q:"receipt",a:"recibo"},
-{q:"neighbourhood",a:"barrio"},
-{q:"maintenance",a:"mantenimiento"},
-{q:"although",a:"aunque"},
-{q:"electrician",a:"electricista"},
-{q:"plumber",a:"fontanero"},
-{q:"mortgage",a:"hipoteca"},
-{q:"appointment",a:"cita"},
-{q:"invoice",a:"factura"},
-{q:"transfer",a:"transferencia"}
+{id:1,q:"receipt",a:"recibo"},
+{id:2,q:"neighbourhood",a:"barrio"},
+{id:3,q:"maintenance",a:"mantenimiento"},
+{id:4,q:"although",a:"aunque"},
+{id:5,q:"electrician",a:"electricista"},
+{id:6,q:"plumber",a:"fontanero"},
+{id:7,q:"mortgage",a:"hipoteca"},
+{id:8,q:"appointment",a:"cita"},
+{id:9,q:"invoice",a:"factura"},
+{id:10,q:"transfer",a:"transferencia"}
 ];
+
 
 const phrases = [
 {q:"I need an appointment",a:"necesito una cita"},
@@ -149,7 +153,13 @@ function getDataset(){
 
 function nextQuestion(){
     const dataset=getDataset();
-    currentQuestion=dataset[Math.floor(Math.random()*dataset.length)];
+    if(document.getElementById("mode").value==="vocab"){
+    currentQuestion =
+        chooseWeightedWord(dataset);
+}else{
+    currentQuestion =
+        dataset[Math.floor(Math.random()*dataset.length)];
+}
 
     document.getElementById("question").textContent=currentQuestion.q;
     document.getElementById("answer").value="";
@@ -167,7 +177,22 @@ function showAnswer(){
 }
 
 function markCorrect(){
+if(currentQuestion.id){
 
+    if(!wordStats[currentQuestion.id]){
+        wordStats[currentQuestion.id] = {
+            correct:0,
+            wrong:0
+        };
+    }
+
+    wordStats[currentQuestion.id].correct++;
+
+    localStorage.setItem(
+        "wordStats",
+        JSON.stringify(wordStats)
+    );
+}
     correct++;
 
     localStorage.setItem("correct",correct);
@@ -180,9 +205,54 @@ function markCorrect(){
 
     setTimeout(nextQuestion,800);
 }
+function getWordWeight(word){
 
+    const stats = wordStats[word.id];
+
+    if(!stats){
+        return 5;
+    }
+
+    return 1 + stats.wrong * 3 - stats.correct;
+}
+function chooseWeightedWord(dataset){
+
+    const weightedPool = [];
+
+    dataset.forEach(word => {
+
+        const weight =
+            Math.max(1,getWordWeight(word));
+
+        for(let i=0;i<weight;i++){
+            weightedPool.push(word);
+        }
+
+    });
+
+    return weightedPool[
+        Math.floor(
+            Math.random()*weightedPool.length
+        )
+    ];
+}    
 function markWrong(){
+if(currentQuestion.id){
 
+    if(!wordStats[currentQuestion.id]){
+        wordStats[currentQuestion.id] = {
+            correct:0,
+            wrong:0
+        };
+    }
+
+    wordStats[currentQuestion.id].wrong++;
+
+    localStorage.setItem(
+        "wordStats",
+        JSON.stringify(wordStats)
+    );
+}
     wrong++;
 
     localStorage.setItem("wrong",wrong);
