@@ -106,175 +106,266 @@ input{
 
 <script>
 let wordStats =
-JSON.parse(localStorage.getItem("wordStats")) || {};
-    
+    JSON.parse(localStorage.getItem("wordStats")) || {};
+
 const vocabulary = [
-{id:1,q:"receipt",a:"recibo"},
-{id:2,q:"neighbourhood",a:"barrio"},
-{id:3,q:"maintenance",a:"mantenimiento"},
-{id:4,q:"although",a:"aunque"},
-{id:5,q:"electrician",a:"electricista"},
-{id:6,q:"plumber",a:"fontanero"},
-{id:7,q:"mortgage",a:"hipoteca"},
-{id:8,q:"appointment",a:"cita"},
-{id:9,q:"invoice",a:"factura"},
-{id:10,q:"transfer",a:"transferencia"}
+    { id: 1, q: "receipt", a: "recibo" },
+    { id: 2, q: "neighbourhood", a: "barrio" },
+    { id: 3, q: "maintenance", a: "mantenimiento" },
+    { id: 4, q: "although", a: "aunque" },
+    { id: 5, q: "electrician", a: "electricista" },
+    { id: 6, q: "plumber", a: "fontanero" },
+    { id: 7, q: "mortgage", a: "hipoteca" },
+    { id: 8, q: "appointment", a: "cita" },
+    { id: 9, q: "invoice", a: "factura" },
+    { id: 10, q: "transfer", a: "transferencia" }
 ];
 
-
 const phrases = [
-{q:"I need an appointment",a:"necesito una cita"},
-{q:"The plumber is coming tomorrow",a:"el fontanero viene mañana"},
-{q:"The heating is not working",a:"la calefacción no funciona"},
-{q:"Can I have the bill please",a:"la cuenta por favor"},
-{q:"I already sent the documents",a:"ya envié los documentos"}
+    { q: "I need an appointment", a: "necesito una cita" },
+    { q: "The plumber is coming tomorrow", a: "el fontanero viene mañana" },
+    { q: "The heating is not working", a: "la calefacción no funciona" },
+    { q: "Can I have the bill please", a: "la cuenta por favor" },
+    { q: "I already sent the documents", a: "ya envié los documentos" }
 ];
 
 const tenses = [
-{q:"Yesterday I bought bread",a:"ayer compré pan"},
-{q:"Yesterday I called the electrician",a:"ayer llamé al electricista"},
-{q:"Tomorrow I will call the plumber",a:"mañana llamaré al fontanero"},
-{q:"Next year we will move to Spain",a:"el año que viene nos mudaremos a españa"},
-{q:"The builder will start next week",a:"el constructor empezará la semana que viene"}
+    { q: "Yesterday I bought bread", a: "ayer compré pan" },
+    { q: "Yesterday I called the electrician", a: "ayer llamé al electricista" },
+    { q: "Tomorrow I will call the plumber", a: "mañana llamaré al fontanero" },
+    { q: "Next year we will move to Spain", a: "el año que viene nos mudaremos a españa" },
+    { q: "The builder will start next week", a: "el constructor empezará la semana que viene" }
 ];
 
 let currentQuestion;
-let correct=Number(localStorage.getItem("correct"))||0;
-let wrong=Number(localStorage.getItem("wrong"))||0;
 
-document.getElementById("correctCount").textContent=correct;
-document.getElementById("wrongCount").textContent=wrong;
+let correct =
+    Number(localStorage.getItem("correct")) || 0;
 
-function getDataset(){
-    const mode=document.getElementById("mode").value;
-    if(mode==="vocab") return vocabulary;
-    if(mode==="phrases") return phrases;
+let wrong =
+    Number(localStorage.getItem("wrong")) || 0;
+
+document.getElementById("correctCount").textContent =
+    correct;
+
+document.getElementById("wrongCount").textContent =
+    wrong;
+
+function getDataset() {
+
+    const mode =
+        document.getElementById("mode").value;
+
+    if (mode === "vocab") return vocabulary;
+
+    if (mode === "phrases") return phrases;
+
     return tenses;
 }
 
-function nextQuestion(){
-    const dataset=getDataset();
-    if(document.getElementById("mode").value==="vocab"){
-    currentQuestion =
-        chooseWeightedWord(dataset);
-}else{
-    currentQuestion =
-        dataset[Math.floor(Math.random()*dataset.length)];
-}
-
-    document.getElementById("question").textContent=currentQuestion.q;
-    document.getElementById("feedback").textContent="";
-    document.getElementById("answerSection").style.display = "none";
-}
-
-function showAnswer(){
-
-    document.getElementById("revealedAnswer").textContent =
-        currentQuestion.a;
-
-    document.getElementById("answerSection").style.display =
-        "block";
-}
-
-function markCorrect(){
-if(currentQuestion.id){
-
-    if(!wordStats[currentQuestion.id]){
-        wordStats[currentQuestion.id] = {
-            correct:0,
-            wrong:0
-        };
-    }
-
-    wordStats[currentQuestion.id].correct++;
-
-    localStorage.setItem(
-        "wordStats",
-        JSON.stringify(wordStats)
-    );
-}
-    correct++;
-
-    localStorage.setItem("correct",correct);
-
-    document.getElementById("correctCount").textContent =
-        correct;
-
-    document.getElementById("feedback").innerHTML =
-        "<span class='correct'>Great!</span>";
-
-    setTimeout(nextQuestion,800);
-}
-function getWordWeight(word){
+function getWordWeight(word) {
 
     const stats = wordStats[word.id];
 
-    if(!stats){
+    if (!stats) {
         return 5;
     }
 
     return Math.max(
-    2,
-    5 + stats.wrong * 4 - stats.correct
-);
-    
+        2,
+        5 + stats.wrong * 4 - stats.correct
+    );
 }
-function chooseWeightedWord(dataset){
+
+function chooseWeightedWord(dataset) {
 
     const weightedPool = [];
 
     dataset.forEach(word => {
 
         const weight =
-            Math.max(1,getWordWeight(word));
+            getWordWeight(word);
 
-        for(let i=0;i<weight;i++){
+        for (let i = 0; i < weight; i++) {
             weightedPool.push(word);
         }
-
     });
 
     return weightedPool[
         Math.floor(
-            Math.random()*weightedPool.length
+            Math.random() * weightedPool.length
         )
     ];
-}    
-function markWrong(){
-if(currentQuestion.id){
+}
 
-    if(!wordStats[currentQuestion.id]){
-        wordStats[currentQuestion.id] = {
-            correct:0,
-            wrong:0
-        };
+function nextQuestion() {
+
+    const dataset = getDataset();
+
+    if (
+        document.getElementById("mode").value ===
+        "vocab"
+    ) {
+
+        currentQuestion =
+            chooseWeightedWord(dataset);
+
+    } else {
+
+        currentQuestion =
+            dataset[
+                Math.floor(
+                    Math.random() *
+                    dataset.length
+                )
+            ];
     }
 
-    wordStats[currentQuestion.id].wrong++;
+    document.getElementById("question")
+        .textContent =
+        currentQuestion.q;
+
+    document.getElementById("feedback")
+        .textContent = "";
+
+    document.getElementById("answerSection")
+        .style.display = "none";
+
+    document.getElementById("debug")
+        .textContent = "";
+}
+
+function showAnswer() {
+
+    document.getElementById("revealedAnswer")
+        .textContent =
+        currentQuestion.a;
+
+    document.getElementById("answerSection")
+        .style.display =
+        "block";
+
+    updateDebug();
+}
+
+function markCorrect() {
+
+    if (currentQuestion.id) {
+
+        if (!wordStats[currentQuestion.id]) {
+
+            wordStats[currentQuestion.id] = {
+                correct: 0,
+                wrong: 0
+            };
+        }
+
+        wordStats[currentQuestion.id].correct++;
+
+        localStorage.setItem(
+            "wordStats",
+            JSON.stringify(wordStats)
+        );
+    }
+
+    correct++;
 
     localStorage.setItem(
-        "wordStats",
-        JSON.stringify(wordStats)
+        "correct",
+        correct
     );
+
+    document.getElementById("correctCount")
+        .textContent = correct;
+
+    document.getElementById("feedback")
+        .innerHTML =
+        "<span class='correct'>Great!</span>";
+
+    setTimeout(nextQuestion, 800);
 }
+
+function markWrong() {
+
+    if (currentQuestion.id) {
+
+        if (!wordStats[currentQuestion.id]) {
+
+            wordStats[currentQuestion.id] = {
+                correct: 0,
+                wrong: 0
+            };
+        }
+
+        wordStats[currentQuestion.id].wrong++;
+
+        localStorage.setItem(
+            "wordStats",
+            JSON.stringify(wordStats)
+        );
+    }
+
     wrong++;
 
-    localStorage.setItem("wrong",wrong);
+    localStorage.setItem(
+        "wrong",
+        wrong
+    );
 
-    document.getElementById("wrongCount").textContent =
+    document.getElementById("wrongCount")
+        .textContent =
         wrong;
 
-    document.getElementById("feedback").innerHTML =
+    document.getElementById("feedback")
+        .innerHTML =
         "<span class='wrong'>We'll review this again.</span>";
 
-    setTimeout(nextQuestion,800);
+    setTimeout(nextQuestion, 800);
 }
-    
+
+function updateDebug() {
+
+    if (
+        !currentQuestion ||
+        !currentQuestion.id
+    ) {
+        return;
+    }
+
+    const stats =
+        wordStats[currentQuestion.id];
+
+    if (!stats) {
+
+        document.getElementById("debug")
+            .textContent =
+            "New word";
+
+        return;
+    }
+
+    document.getElementById("debug")
+        .textContent =
+        `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
+}
+
+function resetLearning() {
+
+    localStorage.removeItem("wordStats");
+
+    wordStats = {};
+
+    alert("Learning data reset");
+}
+
 document.getElementById("mode")
-.addEventListener("change",nextQuestion);
+    .addEventListener(
+        "change",
+        nextQuestion
+    );
 
 nextQuestion();
-
+    
 </script>
 
 </body>
