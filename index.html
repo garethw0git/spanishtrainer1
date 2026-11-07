@@ -357,7 +357,42 @@ function resetLearning() {
 
     alert("Learning data reset");
 }
+function updateDebug() {
 
+    if (!currentQuestion || !currentQuestion.id) {
+
+        document.getElementById("debug")
+            .textContent = "";
+
+        return;
+    }
+
+    const stats =
+        wordStats[currentQuestion.id];
+
+    if (!stats) {
+
+        document.getElementById("debug")
+            .textContent =
+            "New Word";
+
+        return;
+    }
+
+    document.getElementById("debug")
+        .textContent =
+        `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
+}
+    function resetLearning() {
+
+    localStorage.removeItem("wordStats");
+
+    wordStats = {};
+
+    alert("Learning history cleared");
+
+    updateDebug();
+}
 document.getElementById("mode")
     .addEventListener(
         "change",
