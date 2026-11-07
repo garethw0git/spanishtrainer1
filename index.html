@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Spanish A2+ Trainer</title>
 
-
-    
 <style>
+
 body{
     font-family: Arial, sans-serif;
     max-width:700px;
@@ -15,202 +15,287 @@ body{
     padding:20px;
     background:#f4f4f4;
 }
+
 h1{
     color:#333;
 }
+
 .card{
     background:white;
     padding:20px;
     border-radius:10px;
     margin-bottom:15px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
+
+.stats{
+    display:flex;
+    gap:20px;
+    margin-bottom:10px;
+}
+
 button{
     padding:10px 15px;
+    margin:5px;
     border:none;
     border-radius:5px;
     cursor:pointer;
-    margin:5px;
 }
+
 .primary{
     background:#0078d4;
     color:white;
 }
+
 .success{
     background:#107c10;
     color:white;
 }
-input{
-    width:100%;
-    padding:10px;
-    margin-top:10px;
-    margin-bottom:10px;
+
+.danger{
+    background:#d13438;
+    color:white;
 }
+
+.secondary{
+    background:#666;
+    color:white;
+}
+
 .correct{
     color:green;
     font-weight:bold;
 }
+
 .wrong{
     color:red;
     font-weight:bold;
 }
-.stats{
-    display:flex;
-    gap:20px;
+
+#question{
+    min-height:60px;
 }
+
+#debug{
+    margin-top:10px;
+    color:#666;
+    font-size:14px;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h1>Spanish A2+ Trainer</h1>
+<h1>🇪🇸 Spanish A2+ Trainer</h1>
 
 <div class="stats">
-<div>✅ Correct: <span id="correctCount">0</span></div>
-<div>❌ Wrong: <span id="wrongCount">0</span></div>
+    <div>✅ Correct: <span id="correctCount">0</span></div>
+    <div>❌ Wrong: <span id="wrongCount">0</span></div>
 </div>
+
+<div id="debug"></div>
 
 <div class="card">
 
 <select id="mode">
-<option value="vocab">Vocabulary</option>
-<option value="phrases">Phrases</option>
-<option value="tenses">Tenses</option>
+    <option value="vocab">Vocabulary</option>
+    <option value="phrases">Phrases</option>
+    <option value="tenses">Tenses</option>
 </select>
 
 <h2 id="question"></h2>
 
-<button class="primary" onclick="showAnswer()">Show Answer</button>
+<button
+    class="primary"
+    onclick="showAnswer()">
+    Show Answer
+</button>
 
-<div id="answerSection" style="display:none;margin-top:15px;">
+<div
+    id="answerSection"
+    style="display:none;margin-top:15px;">
 
     <h3 id="revealedAnswer"></h3>
 
     <p>Did you get it?</p>
 
-    <button class="success" onclick="markCorrect()">
+    <button
+        class="success"
+        onclick="markCorrect()">
         ✅ Got It
     </button>
 
-    <button style="background:#d13438;color:white;"
-            onclick="markWrong()">
+    <button
+        class="danger"
+        onclick="markWrong()">
         ❌ Didn't Get It
     </button>
 
 </div>
 
-<button onclick="nextQuestion()">Skip</button>
+<div>
+
+    <button
+        class="secondary"
+        onclick="nextQuestion()">
+        Skip
+    </button>
+
+    <button
+        class="secondary"
+        onclick="resetLearning()">
+        Reset Learning
+    </button>
+
+</div>
 
 <p id="feedback"></p>
 
 </div>
 
 <script>
+
 let wordStats =
-    JSON.parse(localStorage.getItem("wordStats")) || {};
+    JSON.parse(
+        localStorage.getItem("wordStats")
+    ) || {};
+
+let lastQuestionId = null;
 
 const vocabulary = [
-    { id: 1, q: "receipt", a: "recibo" },
-    { id: 2, q: "neighbourhood", a: "barrio" },
-    { id: 3, q: "maintenance", a: "mantenimiento" },
-    { id: 4, q: "although", a: "aunque" },
-    { id: 5, q: "electrician", a: "electricista" },
-    { id: 6, q: "plumber", a: "fontanero" },
-    { id: 7, q: "mortgage", a: "hipoteca" },
-    { id: 8, q: "appointment", a: "cita" },
-    { id: 9, q: "invoice", a: "factura" },
-    { id: 10, q: "transfer", a: "transferencia" }
+
+    {id:1,q:"receipt",a:"recibo"},
+    {id:2,q:"neighbourhood",a:"barrio"},
+    {id:3,q:"maintenance",a:"mantenimiento"},
+    {id:4,q:"although",a:"aunque"},
+    {id:5,q:"electrician",a:"electricista"},
+    {id:6,q:"plumber",a:"fontanero"},
+    {id:7,q:"mortgage",a:"hipoteca"},
+    {id:8,q:"appointment",a:"cita"},
+    {id:9,q:"invoice",a:"factura"},
+    {id:10,q:"transfer",a:"transferencia"}
+
 ];
 
 const phrases = [
-    { q: "I need an appointment", a: "necesito una cita" },
-    { q: "The plumber is coming tomorrow", a: "el fontanero viene mañana" },
-    { q: "The heating is not working", a: "la calefacción no funciona" },
-    { q: "Can I have the bill please", a: "la cuenta por favor" },
-    { q: "I already sent the documents", a: "ya envié los documentos" }
+
+    {q:"I need an appointment",a:"necesito una cita"},
+    {q:"The plumber is coming tomorrow",a:"el fontanero viene mañana"},
+    {q:"The heating is not working",a:"la calefacción no funciona"},
+    {q:"Can I have the bill please",a:"la cuenta por favor"},
+    {q:"I already sent the documents",a:"ya envié los documentos"}
+
 ];
 
 const tenses = [
-    { q: "Yesterday I bought bread", a: "ayer compré pan" },
-    { q: "Yesterday I called the electrician", a: "ayer llamé al electricista" },
-    { q: "Tomorrow I will call the plumber", a: "mañana llamaré al fontanero" },
-    { q: "Next year we will move to Spain", a: "el año que viene nos mudaremos a españa" },
-    { q: "The builder will start next week", a: "el constructor empezará la semana que viene" }
+
+    {q:"Yesterday I bought bread",a:"ayer compré pan"},
+    {q:"Yesterday I called the electrician",a:"ayer llamé al electricista"},
+    {q:"Tomorrow I will call the plumber",a:"mañana llamaré al fontanero"},
+    {q:"Next year we will move to Spain",a:"el año que viene nos mudaremos a España"},
+    {q:"The builder will start next week",a:"el constructor empezará la semana que viene"}
+
 ];
 
 let currentQuestion;
 
 let correct =
-    Number(localStorage.getItem("correct")) || 0;
+    Number(
+        localStorage.getItem("correct")
+    ) || 0;
 
 let wrong =
-    Number(localStorage.getItem("wrong")) || 0;
+    Number(
+        localStorage.getItem("wrong")
+    ) || 0;
 
-document.getElementById("correctCount").textContent =
-    correct;
+document.getElementById("correctCount")
+    .textContent = correct;
 
-document.getElementById("wrongCount").textContent =
-    wrong;
+document.getElementById("wrongCount")
+    .textContent = wrong;
 
-function getDataset() {
+function getDataset(){
 
     const mode =
         document.getElementById("mode").value;
 
-    if (mode === "vocab") return vocabulary;
+    if(mode==="vocab") return vocabulary;
 
-    if (mode === "phrases") return phrases;
+    if(mode==="phrases") return phrases;
 
     return tenses;
 }
 
-function getWordWeight(word) {
+function getWordWeight(word){
 
     const stats = wordStats[word.id];
 
-    if (!stats) {
-        return 5;
+    if(!stats){
+        return 10;
     }
 
     return Math.max(
         2,
-        5 + stats.wrong * 4 - stats.correct
+        10 +
+        (stats.wrong * 4) -
+        stats.correct
     );
 }
 
-function chooseWeightedWord(dataset) {
+function chooseWeightedWord(dataset){
 
     const weightedPool = [];
 
-    dataset.forEach(word => {
+    dataset.forEach(word=>{
 
         const weight =
             getWordWeight(word);
 
-        for (let i = 0; i < weight; i++) {
+        for(let i=0;i<weight;i++){
             weightedPool.push(word);
         }
+
     });
 
-    return weightedPool[
-        Math.floor(
-            Math.random() * weightedPool.length
-        )
-    ];
+    let selected;
+
+    do{
+
+        selected =
+            weightedPool[
+                Math.floor(
+                    Math.random() *
+                    weightedPool.length
+                )
+            ];
+
+    }while(
+        weightedPool.length > 1 &&
+        selected.id === lastQuestionId
+    );
+
+    lastQuestionId = selected.id;
+
+    return selected;
 }
 
-function nextQuestion() {
+function nextQuestion(){
 
-    const dataset = getDataset();
+    const dataset =
+        getDataset();
 
-    if (
-        document.getElementById("mode").value ===
-        "vocab"
-    ) {
+    if(
+        document.getElementById("mode").value
+        === "vocab"
+    ){
 
         currentQuestion =
             chooseWeightedWord(dataset);
 
-    } else {
+    }else{
 
         currentQuestion =
             dataset[
@@ -235,7 +320,7 @@ function nextQuestion() {
         .textContent = "";
 }
 
-function showAnswer() {
+function showAnswer(){
 
     document.getElementById("revealedAnswer")
         .textContent =
@@ -248,25 +333,33 @@ function showAnswer() {
     updateDebug();
 }
 
-function markCorrect() {
+function updateWordStats(type){
 
-    if (currentQuestion.id) {
-
-        if (!wordStats[currentQuestion.id]) {
-
-            wordStats[currentQuestion.id] = {
-                correct: 0,
-                wrong: 0
-            };
-        }
-
-        wordStats[currentQuestion.id].correct++;
-
-        localStorage.setItem(
-            "wordStats",
-            JSON.stringify(wordStats)
-        );
+    if(!currentQuestion.id){
+        return;
     }
+
+    if(
+        !wordStats[currentQuestion.id]
+    ){
+
+        wordStats[currentQuestion.id] = {
+            correct:0,
+            wrong:0
+        };
+    }
+
+    wordStats[currentQuestion.id][type]++;
+
+    localStorage.setItem(
+        "wordStats",
+        JSON.stringify(wordStats)
+    );
+}
+
+function markCorrect(){
+
+    updateWordStats("correct");
 
     correct++;
 
@@ -276,34 +369,22 @@ function markCorrect() {
     );
 
     document.getElementById("correctCount")
-        .textContent = correct;
+        .textContent =
+        correct;
 
     document.getElementById("feedback")
         .innerHTML =
         "<span class='correct'>Great!</span>";
 
-    setTimeout(nextQuestion, 800);
+    setTimeout(
+        nextQuestion,
+        1500
+    );
 }
 
-function markWrong() {
+function markWrong(){
 
-    if (currentQuestion.id) {
-
-        if (!wordStats[currentQuestion.id]) {
-
-            wordStats[currentQuestion.id] = {
-                correct: 0,
-                wrong: 0
-            };
-        }
-
-        wordStats[currentQuestion.id].wrong++;
-
-        localStorage.setItem(
-            "wordStats",
-            JSON.stringify(wordStats)
-        );
-    }
+    updateWordStats("wrong");
 
     wrong++;
 
@@ -320,57 +401,25 @@ function markWrong() {
         .innerHTML =
         "<span class='wrong'>We'll review this again.</span>";
 
-    setTimeout(nextQuestion, 800);
+    setTimeout(
+        nextQuestion,
+        1500
+    );
 }
 
-function updateDebug() {
+function updateDebug(){
 
-    if (
+    if(
         !currentQuestion ||
         !currentQuestion.id
-    ) {
+    ){
         return;
     }
 
     const stats =
         wordStats[currentQuestion.id];
 
-    if (!stats) {
-
-        document.getElementById("debug")
-            .textContent =
-            "New word";
-
-        return;
-    }
-
-    document.getElementById("debug")
-        .textContent =
-        `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
-}
-
-function resetLearning() {
-
-    localStorage.removeItem("wordStats");
-
-    wordStats = {};
-
-    alert("Learning data reset");
-}
-function updateDebug() {
-
-    if (!currentQuestion || !currentQuestion.id) {
-
-        document.getElementById("debug")
-            .textContent = "";
-
-        return;
-    }
-
-    const stats =
-        wordStats[currentQuestion.id];
-
-    if (!stats) {
+    if(!stats){
 
         document.getElementById("debug")
             .textContent =
@@ -383,24 +432,38 @@ function updateDebug() {
         .textContent =
         `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
 }
-    function resetLearning() {
+
+function resetLearning(){
+
+    if(
+        !confirm(
+            "Reset all learning history?"
+        )
+    ){
+        return;
+    }
 
     localStorage.removeItem("wordStats");
 
     wordStats = {};
 
-    alert("Learning history cleared");
+    document.getElementById("debug")
+        .textContent = "";
 
-    updateDebug();
+    alert(
+        "Learning history cleared"
+    );
 }
-document.getElementById("mode")
+
+document
+    .getElementById("mode")
     .addEventListener(
         "change",
         nextQuestion
     );
 
 nextQuestion();
-    
+
 </script>
 
 </body>
