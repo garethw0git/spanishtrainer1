@@ -101,6 +101,11 @@ button{
         <input type="checkbox" id="weakMode">
         Weak Words Only
     </label>
+    
+    <label>
+    <input type="checkbox" id="hideKnownWords">
+    Hide Known Words
+    </label>
 </div>
 
 <h2 id="question"></h2>
@@ -209,9 +214,18 @@ function getWordWeight(word){
         return 10;
     }
 
+    if(
+        document.getElementById("hideKnownWords").checked &&
+        stats.correct >= 5 &&
+        stats.wrong <= 1
+    ){
+        return 0;
+    }
+
     return Math.max(
-        2,
-        10 + stats.wrong * 4 - stats.correct
+        1,
+        8 + stats.wrong * 4 -
+        (stats.correct * 2)
     );
 }
 
@@ -224,8 +238,11 @@ function chooseWeightedWord(dataset){
         const weight =
             getWordWeight(word);
 
-        for(let i=0;i<weight;i++){
+            if(weight > 0){
+
+            for(let i=0;i<weight;i++){
             pool.push(word);
+            }
         }
 
     });
