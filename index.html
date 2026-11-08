@@ -83,14 +83,7 @@ button{
 </div>
 
 <div id="debug"></div>
-<div id="weakWords"
-     style="
-     background:white;
-     padding:10px;
-     border-radius:10px;
-     margin-bottom:15px;
-     font-size:14px;">
-</div>
+
 <div class="card">
 
 <select id="mode">
@@ -214,72 +207,9 @@ function getWordWeight(word){
 
 function chooseWeightedWord(dataset){
 
-    let workingDataset = dataset;
+    const pool = [];
 
-    if(
-        document.getElementById("weakMode").checked
-    ){
-
-        workingDataset =
-            dataset.filter(word => {
-
-                const stats =
-                    wordStats[word.id];
-
-                if(!stats){
-                    return false;
-                }
-
-                return (
-                    stats.wrong >= 3 ||
-                    stats.wrong > stats.correct
-                );
-
-            });
-
-        if(workingDataset.length === 0){
-
-            workingDataset = dataset;
-        }
-    }
-
-    const pool=[];
-
-    workingDataset.forEach(word=>{
-
-        const weight =
-            getWordWeight(word);
-
-        for(let i=0;i<weight;i++){
-
-            pool.push(word);
-        }
-
-    });
-
-    let selected;
-
-    do{
-
-        selected=
-            pool[
-                Math.floor(
-                    Math.random()*pool.length
-                )
-    *       ];
-
-    } while(
-        se*ected.id===lastQuestionId &&
-     *  pool.length>1
-    );
-
-    lastQu*stionId=selected.id;
-
-    return s*lected;
-}
-    const pool=[];
-
-    workingDataset.forEach(word=>{
+    dataset.forEach(word => {
 
         const weight =
             getWordWeight(word);
@@ -287,6 +217,7 @@ function chooseWeightedWord(dataset){
         for(let i=0;i<weight;i++){
             pool.push(word);
         }
+
     });
 
     let selected;
@@ -296,16 +227,17 @@ function chooseWeightedWord(dataset){
         selected =
             pool[
                 Math.floor(
-                    Math.random()*pool.length
+                    Math.random() *
+                    pool.length
                 )
             ];
 
-    } while(
-        selected.id===lastQuestionId &&
-        pool.length>1
+    } while (
+        selected.id === lastQuestionId &&
+        pool.length > 1
     );
 
-    lastQuestionId=selected.id;
+    lastQuestionId = selected.id;
 
     return selected;
 }
@@ -425,7 +357,7 @@ function markCorrect(){
     document.getElementById("correctCount")
         .textContent =
         correct;
-    updateWeakWordsDashboard();
+
     setTimeout(
         nextQuestion,
         1500
@@ -446,106 +378,39 @@ function markWrong(){
     document.getElementById("wrongCount")
         .textContent =
         wrong;
-    updateWeakWordsDashboard();
+
     setTimeout(
         nextQuestion,
         1500
     );
 }
 
-
-function*updateDebug(){
+function updateDebug(){
 
     if(
-        !c*rrentQuestion ||
-        !currentQ*estion.id
+        !currentQuestion ||
+        !currentQuestion.id
     ){
         return;
- *  }
+    }
 
     const stats =
-        wor*Stats[currentQuestion.id];
+        wordStats[currentQuestion.id];
 
-    if*!stats){
+    if(!stats){
 
-        document.getElem*ntById("debug")
-            .textC*ntent =
+        document.getElementById("debug")
+            .textContent =
             "New Word";
 
- *      return;
+        return;
     }
 
-    let label*= "";
-
-    if(
-        stats.wrong*>= 3 ||
-        stats.wrong > stat*.correct
-    ){
-        label = " *� Weak Word";
-    }
-
-    document.*etElementById("debug")
-        .te*tContent =
-        `Correct: ${sta*s.correct} | Wrong: ${stats.wrong}*{label}`;
+    document.getElementById("debug")
+        .textContent =
+        `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
 }
-function updateWeakWordsDashboard(){
 
-    const weakWords = [];
-
-    vocabulary.forEach(word => {
-
-        const stats =
-            wordStats[word.id];
-
-        if(!stats){
-            return;
-        }
-
-        if(
-            stats.wrong >= 3 ||
-            stats.wrong > stats.correct
-        ){
-
-            weakWords.push({
-                word: word.q,
-                wrong: stats.wrong,
-                score:
-                    stats.wrong -
-                    stats.correct
-            });
-        }
-
-    });
-
-    weakWords.sort(
-        (a,b) => b.score - a.score
-    );
-
-    let html =
-        "<strong>🔥 Top Weak Words</strong><br>";
-
-    if(
-        weakWords.length === 0
-    ){
-
-        html +=
-            "No weak words yet. Nice work.";
-
-    }else{
-
-        weakWords
-            .slice(0,10)
-            .forEach(word => {
-
-                html +=
-                    `${word.word} (${word.wrong} wrong)<br>`;
-            });
-    }
-
-    document.getElementById(
-        "weakWords"
-    ).innerHTML = html;
-}
 function resetLearning(){
 
     if(
@@ -566,8 +431,6 @@ document
         "change",
         nextQuestion
     );
-
-updateWeakWordsDashboard();
 
 nextQuestion();
 
