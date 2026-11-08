@@ -465,10 +465,11 @@ if(
 ){
 
     weakWords.push({
-        word: word.q,
-        wrong: stats.wrong,
-        correct: stats.correct,
-        score: weaknessScore
+    english: word.q,
+    spanish: word.a,
+    wrong: stats.wrong,
+    correct: stats.correct,
+    score: weaknessScore
     });
 }    
 
@@ -495,7 +496,7 @@ if(
             .forEach(word => {
 
                 html +=
-                    `${word.word} (${word.wrong}W/${word.correct}C)<br>`;
+                    `${word.english} → ${word.spanish} (${word.wrong}W/${word.correct}C)<br>`;
             });
     }
 
