@@ -83,6 +83,14 @@ button{
 </div>
 
 <div id="debug"></div>
+<div id="knownStats"
+     style="
+     background:white;
+     padding:10px;
+     border-radius:10px;
+     margin-bottom:15px;
+     font-size:14px;">
+</div>    
 <div class="card">
 
 <select id="mode">
@@ -377,7 +385,7 @@ function markCorrect(){
     updateWordStats("correct");
 
     updateWeakWordsDashboard();
-
+    updateKnownWordsDashboard();
     correct++;
 
     localStorage.setItem(
@@ -400,7 +408,7 @@ function markWrong(){
     updateWordStats("wrong");
 
     updateWeakWordsDashboard();
-
+    updateKnownWordsDashboard();
     wrong++;
 
     localStorage.setItem(
@@ -442,6 +450,47 @@ function updateDebug(){
     document.getElementById("debug")
         .textContent =
         `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
+}
+
+function updateKnownWordsDashboard(){
+
+    let known = 0;
+    let learning = 0;
+    let weak = 0;
+
+    vocabulary.forEach(word => {
+
+        const stats =
+            wordStats[word.id];
+
+        if(!stats){
+            return;
+        }
+
+        if(
+            stats.correct >= 5 &&
+            stats.wrong <= 1
+        ){
+            known++;
+        }
+        else if(
+            stats.wrong > stats.correct
+        ){
+            weak++;
+        }
+        else{
+            learning++;
+        }
+
+    });
+
+    document.getElementById("knownStats")
+        .innerHTML =
+
+        `<strong>📚 Vocabulary Progress</strong><br>
+         Known: ${known}<br>
+         Learning: ${learning}<br>
+         Weak: ${weak}`;
 }
     
 function updateWeakWordsDashboard(){
@@ -531,7 +580,7 @@ document
         nextQuestion
     );
 
-updateWeakWordsDashboard();
+
 
 function speakText(text){
 
@@ -582,7 +631,8 @@ function speakWord(){
         utterance
     );
 }
-    
+updateWeakWordsDashboard();
+updateKnownWordsDashboard();   
 nextQuestion();
 
 </script>
