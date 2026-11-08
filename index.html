@@ -207,9 +207,37 @@ function getWordWeight(word){
 
 function chooseWeightedWord(dataset){
 
-    const pool = [];
+    let workingDataset = dataset;
 
-    dataset.forEach(word => {
+    if(
+        document.getElementById("weakMode").checked
+    ){
+
+        workingDataset =
+            dataset.filter(word => {
+
+                const stats =
+                    wordStats[word.id];
+
+                if(!stats){
+                    return false;
+                }
+
+                return (
+                    stats.wrong >= 3 ||
+                    stats.wrong > stats.correct
+                );
+
+            });
+
+        if(workingDataset.length === 0){
+            workingDataset = dataset;
+        }
+    }
+
+    const pool=[];
+
+    workingDataset.forEach(word=>{
 
         const weight =
             getWordWeight(word);
@@ -217,7 +245,6 @@ function chooseWeightedWord(dataset){
         for(let i=0;i<weight;i++){
             pool.push(word);
         }
-
     });
 
     let selected;
@@ -227,17 +254,16 @@ function chooseWeightedWord(dataset){
         selected =
             pool[
                 Math.floor(
-                    Math.random() *
-                    pool.length
+                    Math.random()*pool.length
                 )
             ];
 
-    } while (
-        selected.id === lastQuestionId &&
-        pool.length > 1
+    } while(
+        selected.id===lastQuestionId &&
+        pool.length>1
     );
 
-    lastQuestionId = selected.id;
+    lastQuestionId=selected.id;
 
     return selected;
 }
