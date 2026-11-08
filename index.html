@@ -496,7 +496,12 @@ if(
             .forEach(word => {
 
                 html +=
-                    `${word.english} → ${word.spanish} (${word.wrong}W/${word.correct}C)<br>`;
+                    `${word.english} →
+                    <a href="#"
+                    onclick="speakText('${word.spanish}'); return false;">
+                    ${word.spanish}
+                    </a>
+                    (${word.wrong}W/${word.correct}C)<br>`;
             });
     }
 
@@ -528,6 +533,20 @@ document
 
 updateWeakWordsDashboard();
 
+function speakText(text){
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+    utterance.lang = "es-ES";
+
+    speechSynthesis.speak(
+        utterance
+    );
+}
+    
 function speakWord(){
 
     let textToSpeak;
