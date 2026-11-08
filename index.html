@@ -369,7 +369,7 @@ function markCorrect(){
     document.getElementById("correctCount")
         .textContent =
         correct;
-
+    updateWeakWordsDashboard();
     setTimeout(
         nextQuestion,
         1500
@@ -390,7 +390,7 @@ function markWrong(){
     document.getElementById("wrongCount")
         .textContent =
         wrong;
-
+    updateWeakWordsDashboard();
     setTimeout(
         nextQuestion,
         1500
