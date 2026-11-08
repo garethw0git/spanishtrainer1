@@ -480,7 +480,7 @@ if(
     );
 
     let html =
-        "<strong>🔥 Top Weak Words</strong><br>";
+    "<strong>🔥 Top 25 Weak Words</strong><br>";
 
     if(
         weakWords.length === 0
@@ -492,7 +492,7 @@ if(
     } else {
 
         weakWords
-            .slice(0,5)
+            .slice(0,25)
             .forEach(word => {
 
                 html +=
