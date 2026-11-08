@@ -83,7 +83,14 @@ button{
 </div>
 
 <div id="debug"></div>
-
+<div id="weakWords"
+     style="
+     background:white;
+     padding:10px;
+     border-radius:10px;
+     margin-bottom:15px;
+     font-size:14px;">
+</div>
 <div class="card">
 
 <select id="mode">
@@ -175,10 +182,11 @@ let currentQuestion;
 
 document.getElementById("correctCount").textContent =
     correct;
+updateWeakWordsDashboard();
 
 document.getElementById("wrongCount").textContent =
     wrong;
-
+updateWeakWordsDashboard();
 function getDataset(){
 
     const mode =
@@ -410,7 +418,65 @@ function updateDebug(){
         .textContent =
         `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
 }
+    
+function updateWeakWordsDashboard(){
 
+    const weakWords = [];
+
+    vocabulary.forEach(word => {
+
+        const stats =
+            wordStats[word.id];
+
+        if(!stats){
+            return;
+        }
+
+        if(
+            stats.wrong > stats.correct
+        ){
+
+            weakWords.push({
+                word: word.q,
+                wrong: stats.wrong,
+                score:
+                    stats.wrong -
+                    stats.correct
+            });
+        }
+
+    });
+
+    weakWords.sort(
+        (a,b) => b.score - a.score
+    );
+
+    let html =
+        "<strong>🔥 Top Weak Words</strong><br>";
+
+    if(
+        weakWords.length === 0
+    ){
+
+        html +=
+            "No weak words yet.";
+
+    } else {
+
+        weakWords
+            .slice(0,10)
+            .forEach(word => {
+
+                html +=
+                    `${word.word} (${word.wrong} wrong)<br>`;
+            });
+    }
+
+    document.getElementById(
+        "weakWords"
+    ).innerHTML = html;
+}
+    
 function resetLearning(){
 
     if(
@@ -431,6 +497,8 @@ document
         "change",
         nextQuestion
     );
+
+updateWeakWordsDashboard();
 
 nextQuestion();
 
