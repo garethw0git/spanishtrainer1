@@ -359,6 +359,8 @@ function markCorrect(){
 
     updateWordStats("correct");
 
+    updateWeakWordsDashboard();
+
     correct++;
 
     localStorage.setItem(
@@ -369,7 +371,7 @@ function markCorrect(){
     document.getElementById("correctCount")
         .textContent =
         correct;
-    updateWeakWordsDashboard();
+
     setTimeout(
         nextQuestion,
         1500
@@ -379,6 +381,8 @@ function markCorrect(){
 function markWrong(){
 
     updateWordStats("wrong");
+
+    updateWeakWordsDashboard();
 
     wrong++;
 
@@ -390,7 +394,7 @@ function markWrong(){
     document.getElementById("wrongCount")
         .textContent =
         wrong;
-    updateWeakWordsDashboard();
+
     setTimeout(
         nextQuestion,
         1500
