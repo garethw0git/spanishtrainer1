@@ -436,18 +436,20 @@ function updateWeakWordsDashboard(){
             return;
         }
 
-        if(
-            stats.wrong > stats.correct
-        ){
+    const weaknessScore =
+    stats.wrong - stats.correct;
 
-            weakWords.push({
-                word: word.q,
-                wrong: stats.wrong,
-                score:
-                    stats.wrong -
-                    stats.correct
-            });
-        }
+if(
+    weaknessScore >= 2
+){
+
+    weakWords.push({
+        word: word.q,
+        wrong: stats.wrong,
+        correct: stats.correct,
+        score: weaknessScore
+    });
+}    
 
     });
 
@@ -468,11 +470,11 @@ function updateWeakWordsDashboard(){
     } else {
 
         weakWords
-            .slice(0,10)
+            .slice(0,5)
             .forEach(word => {
 
                 html +=
-                    `${word.word} (${word.wrong} wrong)<br>`;
+                    `${word.word} (${word.wrong}W/${word.correct}C)<br>`;
             });
     }
 
