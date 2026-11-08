@@ -231,10 +231,45 @@ function chooseWeightedWord(dataset){
             });
 
         if(workingDataset.length === 0){
+
             workingDataset = dataset;
         }
     }
 
+    const pool=[];
+
+    workingDataset.forEach(word=>{
+
+        const weight =
+            getWordWeight(word);
+
+        for(let i=0;i<weight;i++){
+
+            pool.push(word);
+        }
+
+    });
+
+    let selected;
+
+    do{
+
+        selected=
+            pool[
+                Math.floor(
+                    Math.random()*pool.length
+                )
+    *       ];
+
+    } while(
+        se*ected.id===lastQuestionId &&
+     *  pool.length>1
+    );
+
+    lastQu*stionId=selected.id;
+
+    return s*lected;
+}
     const pool=[];
 
     workingDataset.forEach(word=>{
@@ -411,35 +446,40 @@ function markWrong(){
     );
 }
 
-function updateDebug(){
+
+function*updateDebug(){
 
     if(
-        !currentQuestion ||
-        !currentQuestion.id
+        !c*rrentQuestion ||
+        !currentQ*estion.id
     ){
         return;
-    }
+ *  }
 
     const stats =
-        wordStats[currentQuestion.id];
+        wor*Stats[currentQuestion.id];
 
-    if(!stats){
+    if*!stats){
 
-        document.getElementById("debug")
-            .textContent =
+        document.getElem*ntById("debug")
+            .textC*ntent =
             "New Word";
 
-        return;
+ *      return;
     }
 
-    document.getElementById("debug")
-    .textContent =
-    `Correct: ${stats.correct} | Wrong: ${stats.wrong}` +
-    (
-        stats.wrong > stats.correct
-        ? " 🔥 Weak Word"
-        : ""
-    );
+    let label*= "";
+
+    if(
+        stats.wrong*>= 3 ||
+        stats.wrong > stat*.correct
+    ){
+        label = " *� Weak Word";
+    }
+
+    document.*etElementById("debug")
+        .te*tContent =
+        `Correct: ${sta*s.correct} | Wrong: ${stats.wrong}*{label}`;
 }
 
 function resetLearning(){
