@@ -433,8 +433,13 @@ function updateDebug(){
     }
 
     document.getElementById("debug")
-        .textContent =
-        `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
+    .textContent =
+    `Correct: ${stats.correct} | Wrong: ${stats.wrong}` +
+    (
+        stats.wrong > stats.correct
+        ? " 🔥 Weak Word"
+        : ""
+    );
 }
 
 function resetLearning(){
