@@ -66,6 +66,10 @@ button{
     font-size:14px;
 }
 
+.mode-options{
+    margin:10px 0 20px 0;
+}
+
 </style>
 </head>
 
@@ -88,39 +92,58 @@ button{
     <option value="tenses">Tenses</option>
 </select>
 
+<div class="mode-options">
+    <label>
+        <input type="checkbox" id="reverseMode">
+        Reverse Mode (Spanish → English)
+    </label>
+</div>
+
 <h2 id="question"></h2>
 
-<button class="primary" onclick="showAnswer()">
-Show Answer
+<button
+    class="primary"
+    onclick="showAnswer()">
+    Show Answer
 </button>
 
-<div id="answerSection" style="display:none">
+<div
+    id="answerSection"
+    style="display:none">
 
-<h3 id="revealedAnswer"></h3>
+    <h3 id="revealedAnswer"></h3>
 
-<p>Did you get it?</p>
+    <p>Did you get it?</p>
 
-<button class="success"
-onclick="markCorrect()">
-✅ Got It
-</button>
+    <button
+        class="success"
+        onclick="markCorrect()">
+        ✅ Got It
+    </button>
 
-<button class="danger"
-onclick="markWrong()">
-❌ Didn't Get It
-</button>
+    <button
+        class="danger"
+        onclick="markWrong()">
+        ❌ Didn't Get It
+    </button>
 
 </div>
 
-<button class="secondary"
-onclick="nextQuestion()">
-Skip
-</button>
+<div>
 
-<button class="secondary"
-onclick="resetLearning()">
-Reset Learning
-</button>
+    <button
+        class="secondary"
+        onclick="nextQuestion()">
+        Skip
+    </button>
+
+    <button
+        class="secondary"
+        onclick="resetLearning()">
+        Reset Learning
+    </button>
+
+</div>
 
 </div>
 
@@ -132,7 +155,7 @@ Reset Learning
 
 let wordStats =
 JSON.parse(
-localStorage.getItem("wordStats")
+    localStorage.getItem("wordStats")
 ) || {};
 
 let lastQuestionId = null;
@@ -145,24 +168,27 @@ Number(localStorage.getItem("wrong")) || 0;
 
 let currentQuestion;
 
-document.getElementById("correctCount").textContent=correct;
-document.getElementById("wrongCount").textContent=wrong;
+document.getElementById("correctCount").textContent =
+    correct;
+
+document.getElementById("wrongCount").textContent =
+    wrong;
 
 function getDataset(){
 
     const mode =
-    document.getElementById("mode").value;
+        document.getElementById("mode").value;
 
-    if(mode==="vocab") return vocabulary;
-
-    if(mode==="phrases") return phrases;
+    if(mode === "vocab") return vocabulary;
+    if(mode === "phrases") return phrases;
 
     return tenses;
 }
 
 function getWordWeight(word){
 
-    const stats = wordStats[word.id];
+    const stats =
+        wordStats[word.id];
 
     if(!stats){
         return 10;
@@ -170,84 +196,122 @@ function getWordWeight(word){
 
     return Math.max(
         2,
-        10 + stats.wrong*4 - stats.correct
+        10 + stats.wrong * 4 - stats.correct
     );
 }
 
 function chooseWeightedWord(dataset){
 
-    const pool=[];
+    const pool = [];
 
-    dataset.forEach(word=>{
+    dataset.forEach(word => {
 
         const weight =
-        getWordWeight(word);
+            getWordWeight(word);
 
         for(let i=0;i<weight;i++){
             pool.push(word);
         }
+
     });
 
     let selected;
 
     do{
 
-        selected=
+        selected =
             pool[
                 Math.floor(
-                    Math.random()*pool.length
+                    Math.random() *
+                    pool.length
                 )
             ];
 
-    } while(
-        selected.id===lastQuestionId &&
-        pool.length>1
+    } while (
+        selected.id === lastQuestionId &&
+        pool.length > 1
     );
 
-    lastQuestionId=selected.id;
+    lastQuestionId = selected.id;
 
     return selected;
 }
 
 function nextQuestion(){
 
-    const dataset=getDataset();
+    const dataset =
+        getDataset();
 
     if(
-        document.getElementById("mode").value
-        ==="vocab"
+        document.getElementById("mode").value ===
+        "vocab"
     ){
 
-        currentQuestion=
+        currentQuestion =
             chooseWeightedWord(dataset);
 
     }else{
 
-        currentQuestion=
+        currentQuestion =
             dataset[
                 Math.floor(
-                    Math.random()*dataset.length
+                    Math.random() *
+                    dataset.length
                 )
             ];
     }
 
-    document.getElementById("question")
-        .textContent=currentQuestion.q;
+    const reverseMode =
+        document.getElementById("reverseMode").checked;
+
+    if(
+        reverseMode &&
+        document.getElementById("mode").value ===
+        "vocab"
+    ){
+
+        document.getElementById("question")
+            .textContent =
+            currentQuestion.a;
+
+    }else{
+
+        document.getElementById("question")
+            .textContent =
+            currentQuestion.q;
+    }
 
     document.getElementById("answerSection")
-        .style.display="none";
+        .style.display = "none";
 
     document.getElementById("debug")
-        .textContent="";
+        .textContent = "";
 }
 
 function showAnswer(){
 
-    document.getElementById("revealedAnswer")
-        .textContent=currentQuestion.a;
+    const reverseMode =
+        document.getElementById("reverseMode").checked;
+
+    if(
+        reverseMode &&
+        document.getElementById("mode").value ===
+        "vocab"
+    ){
+
+        document.getElementById("revealedAnswer")
+            .textContent =
+            currentQuestion.q;
+
+    }else{
+
+        document.getElementById("revealedAnswer")
+            .textContent =
+            currentQuestion.a;
+    }
 
     document.getElementById("answerSection")
-        .style.display="block";
+        .style.display = "block";
 
     updateDebug();
 }
@@ -260,7 +324,7 @@ function updateWordStats(type){
 
     if(!wordStats[currentQuestion.id]){
 
-        wordStats[currentQuestion.id]={
+        wordStats[currentQuestion.id] = {
             correct:0,
             wrong:0
         };
@@ -286,9 +350,13 @@ function markCorrect(){
     );
 
     document.getElementById("correctCount")
-        .textContent=correct;
+        .textContent =
+        correct;
 
-    setTimeout(nextQuestion,1500);
+    setTimeout(
+        nextQuestion,
+        1500
+    );
 }
 
 function markWrong(){
@@ -303,31 +371,39 @@ function markWrong(){
     );
 
     document.getElementById("wrongCount")
-        .textContent=wrong;
+        .textContent =
+        wrong;
 
-    setTimeout(nextQuestion,1500);
+    setTimeout(
+        nextQuestion,
+        1500
+    );
 }
 
 function updateDebug(){
 
-    if(!currentQuestion.id){
+    if(
+        !currentQuestion ||
+        !currentQuestion.id
+    ){
         return;
     }
 
     const stats =
-    wordStats[currentQuestion.id];
+        wordStats[currentQuestion.id];
 
     if(!stats){
 
         document.getElementById("debug")
-            .textContent="New Word";
+            .textContent =
+            "New Word";
 
         return;
     }
 
     document.getElementById("debug")
-        .textContent=
-        `Correct: ${stats.correct} Wrong: ${stats.wrong}`;
+        .textContent =
+        `Correct: ${stats.correct} | Wrong: ${stats.wrong}`;
 }
 
 function resetLearning(){
@@ -344,8 +420,12 @@ function resetLearning(){
     }
 }
 
-document.getElementById("mode")
-.addEventListener("change",nextQuestion);
+document
+    .getElementById("mode")
+    .addEventListener(
+        "change",
+        nextQuestion
+    );
 
 nextQuestion();
 
