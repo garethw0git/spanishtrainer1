@@ -106,7 +106,7 @@ const vocabulary = [
 {id:97,q:"training",a:"entrenamiento"},
 {id:98,q:"speed",a:"velocidad"},
 {id:99,q:"distance",a:"distancia"},
-{id:100,q:"route",a:"ruta"}
+{id:100,q:"route",a:"ruta"},
 
 {id:101,q:"property",a:"propiedad"},
 {id:102,q:"apartment",a:"apartamento"},
