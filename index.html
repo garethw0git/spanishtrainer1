@@ -278,9 +278,10 @@ function nextQuestion(){
         document.getElementById("reverseMode").checked;
 
     if(
-        reverseMode &&
-        document.getElementById("mode").value ===
-        "vocab"
+    reverseMode &&
+    document.getElementById("mode").value !==
+    "tenses"
+        )
     ){
 
         document.getElementById("question")
@@ -307,10 +308,11 @@ function showAnswer(){
         document.getElementById("reverseMode").checked;
 
     if(
-        reverseMode &&
-        document.getElementById("mode").value ===
-        "vocab"
-    ){
+    reverseMode &&
+    document.getElementById("mode").value !==
+    "tenses"
+)
+    {
 
         document.getElementById("revealedAnswer")
             .textContent =
