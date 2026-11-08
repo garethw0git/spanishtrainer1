@@ -104,7 +104,11 @@ button{
 </div>
 
 <h2 id="question"></h2>
+// Added the pronounce 11 Nov
+    <button onclick="speakWord()">
+        🔊 Pronounce
 
+    </button>
 <button
     class="primary"
     onclick="showAnswer()">
@@ -500,6 +504,42 @@ document
 
 updateWeakWordsDashboard();
 
+function speakWord(){
+
+    let textToSpeak;
+
+    const reverseMode =
+        document.getElementById("reverseMode").checked;
+
+    if(
+        reverseMode &&
+        document.getElementById("mode").value !==
+        "tenses"
+    ){
+
+        textToSpeak =
+            currentQuestion.a;
+
+    }else{
+
+        textToSpeak =
+            document.getElementById("mode").value === "vocab"
+            ? currentQuestion.a
+            : currentQuestion.a;
+    }
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            textToSpeak
+        );
+
+    utterance.lang = "es-ES";
+
+    speechSynthesis.speak(
+        utterance
+    );
+}
+    
 nextQuestion();
 
 </script>
