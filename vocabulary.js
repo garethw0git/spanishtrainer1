@@ -177,7 +177,6 @@ const vocabulary = [
 {id:161,q:"station",a:"estación"},
 {id:162,q:"airport",a:"aeropuerto"},
 {id:163,q:"bus stop",a:"parada de autobús"},
-{id:164,q:"ticket",a:"
   
 {id:301,q:"to manage",a:"gestionar"},
 {id:302,q:"to deal with",a:"ocuparse de"},
